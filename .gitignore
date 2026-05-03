@@ -1,0 +1,15 @@
+# Secrets
+.env
+
+# Base de données (données personnelles)
+db/*.db
+
+# Environnement Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# OS
+.DS_Store
