@@ -32,95 +32,93 @@
 - Comité CLARIFY : Minimaliste + Exhaustif + Réaliste + Devil's Advocate + Synthesizer
 - Comité ORGANIZE+PLAN : Urgentiste + Sprinter + Context Agent + Devil's Advocate + Synthesizer
 
-**Agents définis (12 au total) :**
-| Agent | Rôle | Comité |
-|---|---|---|
-| Manager | Superviseur, interface Telegram | — |
-| Collector | Capture sans jugement | solo |
-| Minimaliste | Minimum d'actions possible | CLARIFY |
-| Exhaustif | Couverture complète des risques | CLARIFY |
-| Réaliste | Faisabilité selon contraintes réelles | CLARIFY |
-| Urgentiste | Priorisation / ordre | ORGANIZE+PLAN |
-| Sprinter | Rythme / calendrier | ORGANIZE+PLAN |
-| Context Agent | Pose questions à l'utilisateur (énergie, dispo) | ORGANIZE+PLAN |
-| Devil's Advocate | Challenge tous les agents (transversal) | CLARIFY + O+P |
-| Synthesizer | Conclut les débats (transversal) | CLARIFY + O+P |
-| Researcher | Recherche web à la demande | solo |
-| Reviewer | Weekly review | solo |
-
-### État du projet
-- [ ] Code : rien de codé
-- [x] Architecture : validée
-- [x] CLAUDE.md : créé
-- [x] JOURNAL.md : créé
-- [ ] Structure de dossiers : à créer
-- [ ] Phase 1 : à démarrer
-
-### Prochaine session
-Démarrer Phase 1 :
-1. Créer la structure de dossiers
-2. Écrire les SOUL.md de chaque agent
-3. Configurer `.env`
-4. `main.py` — bot Telegram basique
-5. `graph.py` — graphe LangGraph : Manager → Collector → Comité Clarify
-6. SQLite schema (inbox, projects, tasks, next_actions)
-
 ---
 
 ## Session 2 — 2026-05-03 — Affinage architecture
 
-### Décisions prises
-
-**GTD = skill, pas du code**
-- Le workflow GTD est un fichier markdown (`skills/gtd.md`) injecté dans les agents
-- L'app core est générique : orchestration + interface + tools Python
-- Swapper GTD contre une autre méthodo = changer le markdown, zéro code
-
-**Calm technology — interface unique**
-- Seul output visible : message Telegram chaque matin avec 3-4 actions du jour
-- L'utilisateur répond (texte ou vocal), l'agent adapte en silence
-- Pas de dashboard, pas d'inbox visible, toute la logistique est interne (SQLite)
-- Vocaux Telegram supportés dès le début (Whisper pour STT)
-
-**Interface découplée du core**
-```
-interfaces/telegram.py   ← Phase 1
-interfaces/sms.py        ← Phase 3 (Twilio)
-interfaces/voice.py      ← Phase 3 (Twilio + Whisper)
-```
-Les agents ne savent pas par quelle interface le message est arrivé.
-
-**Tools : pas de code custom si ça existe déjà**
-- Gmail → `langchain-community` GmailToolkit
-- Google Calendar → `langchain-google-community` GoogleCalendarToolkit
-- SQLite → sqlite3 natif Python
-- Web search → TavilySearch
-- Telegram vocaux → Whisper (OpenAI API)
-
-**Structure finale retenue**
-```
-agentperso/
-├── core/
-│   ├── graph.py          ← routing LangGraph
-│   └── db.py             ← accès SQLite
-├── interfaces/
-│   └── telegram.py       ← bot Telegram (point d'entrée)
-├── agents/               ← SOUL.md par agent
-├── skills/               ← markdown chargés à la demande
-│   ├── gtd.md
-│   └── debate.md
-├── tools/                ← fonctions Python custom (inbox, tasks)
-├── main.py               ← point d'entrée
-└── .env
-```
-
-### Prochaine session
-1. Créer la structure de dossiers
-2. Écrire les SOUL.md (Manager, Collector, agents Clarify)
-3. Écrire les skills markdown (gtd.md, debate.md)
-4. `main.py` + `interfaces/telegram.py` — bot basique
-5. `core/graph.py` — graphe LangGraph minimal
-6. `core/db.py` + schema SQLite
+**GTD = skill, pas du code** — workflow dans des fichiers markdown, core générique.
+**Calm technology** — output unique : message Telegram matin avec 3-4 actions.
+**Interface découplée** — `interfaces/telegram.py`, les agents ignorent le canal d'entrée.
 
 ---
-<!-- Les sessions suivantes s'ajoutent ici, au-dessus de ce commentaire -->
+
+## Sessions 3-4 — 2026-05-03/04 — Phase 1 + Phase 2 complètes
+
+### Ce qui a été construit
+
+#### Phase 1 — Infrastructure de base
+- `main.py` + `interfaces/telegram.py` — bot Telegram avec HITL (`interrupt()`)
+- `core/graph.py` — graphe LangGraph complet
+- `core/db.py` — SQLite (inbox, projects, tasks)
+- Tous les SOUL.md rédigés (13 agents)
+
+#### Graphe LangGraph (ordre d'exécution)
+```
+START → manager → collector → context_agent → clarify ⇄ clarify_ask
+                                                  ↓
+                                            researcher → research_review
+                                                  ↓
+                                           organize_plan → END
+                              complete (tâche terminée) → END ou organize_plan
+```
+
+#### Agents implémentés
+| Node | Rôle |
+|---|---|
+| `manager_node` | Routing + sauvegarde mémoire auto + détection recherche |
+| `collector_node` | Inbox SQLite |
+| `context_agent_node` | Questions contextuelles (HITL interrupt) |
+| `clarify_node` | Débat MAD 3 rounds (Minimaliste/Exhaustif/Réaliste + DA + Synthesizer) |
+| `clarify_ask_node` | Pause mid-débat si Synthesizer a besoin d'une info (HITL) |
+| `researcher_node` | Perplexity `sonar` via OpenRouter |
+| `research_review_node` | Présente les résultats à l'utilisateur (HITL) |
+| `organize_plan_node` | Débat MAD 1 round (Urgentiste + Sprinter + DA + Synthesizer) |
+| `complete_node` | Marque tâche done SQLite + Google Tasks |
+| `run_review()` | Weekly review standalone (appelée par JobQueue ou `/review`) |
+
+#### Tools créés
+- `tools/memory.py` — `append_to_user_profile()` (mémoire auto depuis Manager)
+- `tools/calendar.py` — `list_events()`, `create_event()`, OAuth2 Google Calendar
+- `tools/tasks_google.py` — `get_or_create_task_list()`, `create_task()`, `complete_task_by_title()`
+
+#### Features Telegram
+- Messages texte → pipeline GTD complet
+- HITL multi-niveaux : Context Agent, mid-débat Clarify, Research Review
+- `/review` command → weekly review à la demande
+- Job planifié chaque vendredi 18h (APScheduler via JobQueue)
+
+### Décisions architecturales
+
+**Google Tasks (pas Calendar) pour les tâches GTD**
+- 1 liste Google Tasks = 1 projet GTD → archivage naturel des tâches terminées
+- Google Calendar = événements uniquement (rendez-vous, deadlines fixes)
+- `organize_plan_node` lit le Calendar avant de planifier pour éviter les conflits
+
+**Researcher : query affinée post-Clarify**
+- Le Manager fixe une query initiale
+- Le Synthesizer de Clarify produit une `research_query_refined` avec tout ce qu'on a appris
+- Si la query devient vide (l'utilisateur avait déjà les infos), la recherche est annulée
+
+**Scheduling time-aware**
+- Heure courante injectée dans le contexte d'Organize+Plan
+- Règle explicite : si après 18h → pas de tâche `day_offset=0`
+
+**Mémoire auto**
+- Manager extrait `user_note` de chaque message et appelle `append_to_user_profile()`
+- USER.md enrichi automatiquement au fil des conversations
+
+### État actuel — Phase 2 complète ✅
+
+**Fonctionnel et testé :**
+- [x] Pipeline GTD complet : Capture → Clarify → Researcher → Review → Organize+Plan
+- [x] HITL à 3 niveaux (Context Agent / mid-débat / Research Review)
+- [x] Google Tasks : création avec dates d'échéance, completion automatique
+- [x] Google Calendar : lecture des événements existants avant planification
+- [x] Mémoire auto USER.md
+- [x] Weekly Reviewer (manuel `/review` + automatique vendredi 18h)
+
+### Reste à faire (Phase 3)
+- [ ] **Vocaux Whisper** — transcrire les vocaux Telegram avant le pipeline
+- [ ] **Google Maps API** — calculer distance + coût diesel pour recommander les magasins les plus avantageux (adresse : Rue Désiré Maroille 13A, 7300 Boussu)
+- [ ] **Router Agent** — sélection dynamique des personas selon le type de projet
+- [ ] **Matin automatique** — message quotidien avec les 3-4 actions du jour

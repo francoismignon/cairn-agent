@@ -1,35 +1,39 @@
 # USER.md — Profil utilisateur
 
 ## Identité
-- **Prénom** : [votre prénom]
-- **Email** : [votre email]
-- **Lieu** : [ville / région ?]
-- **Situation logement** : [appartement / maison ? jardin ? balcon ?]
+- **Nom** : François Mignon
+- **Date de naissance** : 04/11/1987
+- **Email** : mignon.francois@gmail.com
+- **Adresse** : Rue Désiré Maroille 13A, 7300 Boussu (région de Mons, Belgique)
+
+## Logement
+- **Type** : Maison
+- **Jardin** : oui, environ 20m × 6m
+
+## Famille
+- **Situation** : en couple avec Doriane (née le 28/04/1987)
+- **Enfants** : 1 fille — Rosie (née le 14/01/2020)
 
 ## Contexte professionnel
-- **Situation actuelle** : [en poste / en recherche d'emploi ?]
-- **Domaine** : [secteur / métier ?]
-- **Objectif pro** : [recherche active, reconversion, freelance ?]
-
-## Contexte personnel
-- **Famille** : [seul / en couple / enfants ?]
-- **Animaux** : [oui / non ?]
-- **Jardin / extérieur** : [surface approximative ?]
+- **Situation actuelle** : [à compléter]
+- **Domaine** : [à compléter]
 
 ## Préférences de travail
-- **Énergie** : plutôt du matin ou de l'après-midi ?
-- **Rythme** : [semaine classique / décalé / variable ?]
 - **Max tâches par jour** : 3-4 (confirmé)
-
-## Budget
-- **Budget mensuel projets perso** : [fourchette ?]
-- **Budget jardinage** : [fourchette ?]
+- **Rythme** : [à compléter]
 
 ## Communication
 - **Interface** : Telegram (texte + vocaux)
-- **Ton souhaité** : direct, sobre, sans blabla (confirmé)
+- **Ton souhaité** : direct, sobre, sans blabla
 - **Langue** : français
 
+## Magasins / Ressources locales
+- Pour trouver le meilleur magasin, utiliser la distance depuis Boussu et le coût du diesel — le plus proche au meilleur rapport qualité/prix, pas forcément la grande chaîne
+- Recherches de prix : tenir compte du coût du trajet (diesel) dans le calcul
+
 ## Projets en cours
-<!-- Le Manager et les agents mettent à jour cette section au fil du temps -->
-- Développement de l'assistant personnel cairn-agent
+<!-- Le Manager met à jour cette section au fil du temps -->
+
+## Informations collectées
+- Possède des palettes et un pied de biche pour le projet de cabane de Rosie
+- A déjà mesuré l'emplacement et fait les plans de la cabane

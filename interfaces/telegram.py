@@ -1,7 +1,9 @@
 import os
 import logging
+from datetime import time as dtime
+from zoneinfo import ZoneInfo
 from telegram import Update
-from telegram.ext import Application, MessageHandler, filters, ContextTypes
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from langgraph.types import Command
 
 from core.graph import graph
@@ -9,6 +11,7 @@ from core.graph import graph
 logger = logging.getLogger(__name__)
 
 ALLOWED_USER_ID = int(os.getenv("TELEGRAM_ALLOWED_USER_ID", "0"))
+_TZ_BRUSSELS = ZoneInfo("Europe/Brussels")
 
 # Threads actuellement en attente d'une réponse HITL
 _interrupted_threads: set[str] = set()
@@ -35,7 +38,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     # Vérifier si le graphe s'est mis en pause (interrupt)
     state = await graph.aget_state(config)
     if state.next:
-        # Le graphe est en pause — extraire la question posée par le Context Agent
         _interrupted_threads.add(thread_id)
         for task in state.tasks:
             for intr in getattr(task, "interrupts", []):
@@ -46,6 +48,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text(reply)
 
 
+async def review_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.effective_user.id != ALLOWED_USER_ID:
+        return
+    from core.graph import run_review
+    await update.message.reply_text("⏳ Génération de la revue hebdomadaire…")
+    text = await run_review()
+    await update.message.reply_text(text)
+
+
+async def _scheduled_weekly_review(context: ContextTypes.DEFAULT_TYPE) -> None:
+    from core.graph import run_review
+    text = await run_review()
+    await context.bot.send_message(chat_id=ALLOWED_USER_ID, text=text)
+
+
 def build_app() -> Application:
     app = (
         Application.builder()
@@ -53,4 +70,12 @@ def build_app() -> Application:
         .build()
     )
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.add_handler(CommandHandler("review", review_command))
+
+    # Weekly review every Friday at 18:00 Brussels time
+    app.job_queue.run_daily(
+        _scheduled_weekly_review,
+        time=dtime(hour=18, minute=0, tzinfo=_TZ_BRUSSELS),
+        days=(4,),  # 0=Monday … 4=Friday
+    )
     return app

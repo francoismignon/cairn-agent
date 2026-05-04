@@ -1,5 +1,6 @@
 # Secrets
 .env
+credentials/
 
 # Base de données (données personnelles)
 db/*.db
