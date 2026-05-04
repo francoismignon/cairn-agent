@@ -6,8 +6,8 @@ L'utilisateur parle à un Manager Agent qui délègue à des agents spécialisé
 Philosophie inspirée d'OpenClaw/Hermes : markdown files pour les agents, SQLite pour les données.
 
 ## WHY — Pourquoi
-François veut comprendre l'orchestration multi-agents en construisant de zéro.
-Le système doit être modulaire, lisible, et entièrement sous son contrôle.
+Un projet d'apprentissage : comprendre l'orchestration multi-agents en construisant de zéro.
+Le système doit être modulaire, lisible, et entièrement sous le contrôle de l'utilisateur.
 
 ## Stack
 - **Python 3.11+**
@@ -68,7 +68,7 @@ agentperso/
 
 ## HOW — Conventions importantes
 - Chaque agent lit son `SOUL.md` injecté dans son system prompt
-- Le HITL (Human-in-the-Loop) se fait via LangGraph `interrupt()` — l'agent pose une question, attend la réponse Telegram de François, reprend
+- Le HITL (Human-in-the-Loop) se fait via LangGraph `interrupt()` — l'agent pose une question, attend la réponse Telegram de l'utilisateur, reprend
 - OpenRouter s'utilise comme OpenAI (même SDK, changer la base URL)
 - Modèle actuel : `deepseek/deepseek-chat` (cheap pour tests)
 - Variables d'env dans `.env`, jamais hardcodées

@@ -2,7 +2,7 @@
 name: gtd
 description: Gestion de tâches, projets, et organisation personnelle
 when_to_use: >
-  Quand François mentionne une tâche à faire, un projet, quelque chose à ne pas
+  Quand l'utilisateur mentionne une tâche à faire, un projet, quelque chose à ne pas
   oublier, une idée à capturer, ou qu'il demande quoi faire aujourd'hui /
   cette semaine. Aussi quand il dit qu'il a terminé quelque chose ou qu'il
   ne peut pas faire quelque chose aujourd'hui.
@@ -11,7 +11,7 @@ when_to_use: >
 # Skill — GTD (Getting Things Done)
 
 ## Philosophie
-GTD repose sur un principe : ton cerveau est fait pour avoir des idées, pas pour les stocker. Tout ce qui "traîne" dans ta tête crée une charge mentale invisible. Le système prend en charge le stockage — François se concentre sur l'exécution.
+GTD repose sur un principe : ton cerveau est fait pour avoir des idées, pas pour les stocker. Tout ce qui "traîne" dans ta tête crée une charge mentale invisible. Le système prend en charge le stockage — l'utilisateur se concentre sur l'exécution.
 
 ## Les 5 étapes
 
@@ -39,7 +39,7 @@ Classer les actions clarifiées :
 Revue hebdomadaire : vider l'inbox, vérifier les projets, mettre à jour les priorités. Fait par le Reviewer chaque vendredi.
 
 ### 5. Engage
-Chaque matin, François reçoit 3-4 next actions. C'est la seule chose qu'il voit.
+Chaque matin, l'utilisateur reçoit 3-4 next actions. C'est la seule chose qu'il voit.
 
 ## Règles de formulation d'une next action
 - Commence par un verbe d'action physique : "Appeler", "Écrire", "Envoyer", "Ouvrir", "Lire"

@@ -78,7 +78,7 @@ Démarrer Phase 1 :
 
 **Calm technology — interface unique**
 - Seul output visible : message Telegram chaque matin avec 3-4 actions du jour
-- François répond (texte ou vocal), l'agent adapte en silence
+- L'utilisateur répond (texte ou vocal), l'agent adapte en silence
 - Pas de dashboard, pas d'inbox visible, toute la logistique est interne (SQLite)
 - Vocaux Telegram supportés dès le début (Whisper pour STT)
 
